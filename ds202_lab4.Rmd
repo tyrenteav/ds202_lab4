@@ -1,0 +1,65 @@
+---
+title: "ds202_lab4"
+author: "Tyren Teav"
+date: "3/17/2021"
+output: html_document
+---
+ Part 1, Cleaning Data
+ 
+```{r}
+library(dplyr)
+library(readxl)
+defense <- read_excel('/Users/Tyren/Desktop/DS_202/cyclonesFootball2020.xlsx', sheet='Defensive')
+offense <- read_excel('/Users/Tyren/Desktop/DS_202/cyclonesFootball2020.xlsx', sheet='Offensive')
+bio <- read_excel('/Users/Tyren/Desktop/DS_202/cyclonesFootball2020.xlsx', sheet='Biography')
+
+str(defense)
+str(offense)
+str(bio)
+
+?across()
+
+
+defclean <- defense %>%
+  as_tibble() %>%
+  mutate(across(c("Tackles_Solo":"Pass_PB"), as.numeric))
+  
+str(defclean)
+
+offclean <- offense %>%
+  as_tibble() %>%
+  mutate(across(c("Receiving_REC":"Passing_INT"), as.numeric))
+
+str(offclean)
+
+bioclean <- bio %>%
+  as_tibble() %>%
+  mutate(across(c("Weight"), as.numeric))
+
+str(bioclean)
+unique(bioclean$Height)
+
+Height <- as.numeric(bioclean$Height)
+
+Height = ifelse(bioclean$Height %in% c('6-0'), 72, Height)
+Height = ifelse(bioclean$Height %in% c('6-7'), 79, Height)
+Height = ifelse(bioclean$Height %in% c('6-5'), 77, Height)
+Height = ifelse(bioclean$Height %in% c('6-3'), 75, Height)
+Height = ifelse(bioclean$Height %in% c('6-2'), 74, Height)
+Height = ifelse(bioclean$Height %in% c('6-6'), 78, Height)
+Height = ifelse(bioclean$Height %in% c('5-11'), 71, Height)
+Height = ifelse(bioclean$Height %in% c('6-4'), 76, Height)
+Height = ifelse(bioclean$Height %in% c('5-9'), 69, Height)
+Height = ifelse(bioclean$Height %in% c('6-1'), 73, Height)
+Height = ifelse(bioclean$Height %in% c('6-8'), 80, Height)
+Height = ifelse(bioclean$Height %in% c('5-10'), 70, Height)
+Height = ifelse(bioclean$Height %in% c('6-9'), 81, Height)
+
+bioclean$Height = Height
+
+str(defclean)
+str(offclean)
+str(bioclean)
+
+
+```

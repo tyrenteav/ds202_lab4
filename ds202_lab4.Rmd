@@ -61,5 +61,61 @@ str(defclean)
 str(offclean)
 str(bioclean)
 
+```
+
+
+
+
+Part 2, Tidying
+Problem 4 and 5
+```{r}
+library(tidyr)
+
+bio2 <- bioclean %>%
+  separate(Hometown, c("City","State"), ",")
+head(bio2)
+
+
+state <- bio2 %>%
+  group_by(State) %>%
+  summarize(
+    count = length(State)) %>%
+      arrange(count)
+  
+state
+
+
+
+
+```
+
+Part 3
+
+Problem 1
+
+```{r}
+library(ggplot2)
+offhome <- left_join(offclean,bio2)
+offhome2 <-   offhome[!duplicated(offhome$Name), ]
+
+offhome2 %>%
+  group_by(Name) %>%
+  summarize(City, State) 
+
+
+
+defhome <- left_join(defclean,bio2)
+defhome2 <-   defhome[!duplicated(defhome$Name), ]
+
+defhome2 %>%
+   group_by(Name) %>%
+  summarize(City, State) 
+
+
+ggplot(defhome2, aes(x=Name,y=State)) + geom_point() + coord_flip()
+ggplot(offhome2, aes(x=Name,y=State)) + geom_point() + coord_flip()
+
+
+
 
 ```

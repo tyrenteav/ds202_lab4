@@ -1,0 +1,126 @@
+---
+title: "ds202_lab4"
+author: "Rithwik Gokhale"
+date: "3/19/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+```
+
+```{r}
+library(readxl)
+
+defense <- read_excel('C:/Users/rithw/Desktop/School work/DS 202/cyclonesFootball2020.xlsx', sheet='Defensive')
+
+offense <- read_excel('C:/Users/rithw/Desktop/School work/DS 202/cyclonesFootball2020.xlsx', sheet='Offensive')
+
+biography <- read_excel('C:/Users/rithw/Desktop/School work/DS 202/cyclonesFootball2020.xlsx', sheet='Biography')
+```
+
+```{r}
+str(defense)
+str(offense)
+str(bio)
+?across()
+defclean <- defense %>%
+  as_tibble() %>%
+  mutate(across(c("Tackles_Solo":"Pass_PB"), as.numeric))
+  
+str(defclean)
+offclean <- offense %>%
+  as_tibble() %>%
+  mutate(across(c("Receiving_REC":"Passing_INT"), as.numeric))
+str(offclean)
+bioclean <- bio %>%
+  as_tibble() %>%
+  mutate(across(c("Weight"), as.numeric))
+str(bioclean)
+unique(bioclean$Height)
+Height <- as.numeric(bioclean$Height)
+Height = ifelse(bioclean$Height %in% c('6-0'), 72, Height)
+Height = ifelse(bioclean$Height %in% c('6-7'), 79, Height)
+Height = ifelse(bioclean$Height %in% c('6-5'), 77, Height)
+Height = ifelse(bioclean$Height %in% c('6-3'), 75, Height)
+Height = ifelse(bioclean$Height %in% c('6-2'), 74, Height)
+Height = ifelse(bioclean$Height %in% c('6-6'), 78, Height)
+Height = ifelse(bioclean$Height %in% c('5-11'), 71, Height)
+Height = ifelse(bioclean$Height %in% c('6-4'), 76, Height)
+Height = ifelse(bioclean$Height %in% c('5-9'), 69, Height)
+Height = ifelse(bioclean$Height %in% c('6-1'), 73, Height)
+Height = ifelse(bioclean$Height %in% c('6-8'), 80, Height)
+Height = ifelse(bioclean$Height %in% c('5-10'), 70, Height)
+Height = ifelse(bioclean$Height %in% c('6-9'), 81, Height)
+bioclean$Height = Height
+str(defclean)
+str(offclean)
+str(bioclean)
+```
+
+Q1Part2
+```{r}
+offClean <- offense %>%
+  mutate(Name = as.factor(Name),
+         Opponent_Opponent = as.factor(Opponent_Opponent),
+         Rushing_ATT = as.numeric(Rushing_ATT),
+         Rushing_YDS = as.numeric(Rushing_YDS),
+         Rushing_TD = as.numeric(Rushing_TD),
+         Receiving_REC = as.numeric(Receiving_REC),
+         Receiving_YDS = as.numeric(Receiving_YDS),
+         Receiving_TD = as.numeric(Receiving_TD),
+         `Passing_CMP-ATT` = as.numeric(`Passing_CMP-ATT`),
+         Passing_YDS = as.numeric(Passing_YDS),
+         Passing_TD = as.numeric(Passing_TD),
+         Passing_INT = as.numeric(Passing_INT))
+str(offClean)
+```
+
+Q1Part3
+```{r}
+bioClean <- biography %>%
+  separate(Height, c('Feet', 'Inches'), '-', convert=TRUE) %>%
+  mutate(Name = as.factor(Name),
+         Position = as.factor(Position),
+         Feet = as.numeric(Feet),
+         Inches = as.numeric(Inches),
+         Weight = as.numeric(Weight),
+         Class = as.factor(Class),
+         Hometown = as.factor(Hometown),
+         Highschool = as.factor(Highschool))
+str(bioClean)
+```
+
+Q2Part1
+```{r}
+offClean2 <- offClean %>%
+  pivot_longer(Rushing_ATT:Passing_INT, names_to = 'stat')
+str(offClean2)
+```
+
+Q2Part2
+```{r}
+ggplot(offClean2, aes(x = stat, y = value)) + geom_bar(stat = 'identity')
+```
+
+Here we can see that the passing yards and rushing yards have significantly higher values than any of the other columns
+
+Q3Part 2
+```{r}
+BrockP <- full_join(x = offClean, y = defClean)
+BrockP2 <- BrockP %>%
+  filter(Name == 'Purdy, Brock')
+Team <- BrockP %>%
+  filter(Name != 'Purdy, Brock')
+
+ggplot(BrockP, aes(x = Opponent_Opponent, y = Rushing_TD)) + geom_bar(stat = 'identity')
+
+ggplot(Team, aes(x = Opponent_Opponent, y = Rushing_TD)) + geom_bar(stat = 'identity')
+```
+
+From this we can see that brock has more rushing touchdown than the rest of the team member average
+
